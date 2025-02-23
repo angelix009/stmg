@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>$STMG Terminal</title>
+    <style>
+        @font-face {
+            font-family: 'VT323';
+            src: url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        }
+
+        body {
+            background-color: #001800;
+            color: #00ff00;
+            font-family: monospace;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        #terminal {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
+            border: 2px solid #00ff00;
+            box-shadow: inset 0 0 18px #003300,
+                       0 0 18px #003300;
+            background: #001200;
+        }
+
+        .ascii-art {
+            white-space: pre;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .command-line {
+            margin: 4px 0;
+            line-height: 1.2;
+        }
+
+        #input-line {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: inherit;
+            outline: none;
+            width: 80%;
+        }
+
+        .prompt {
+            color: #00ff00;
+        }
+
+        .price-up { color: #00ff00; }
+        .price-down { color: #ff0000; }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <pre class="ascii-art">
+███████╗████████╗███╗   ███╗ ██████╗ 
+██╔════╝╚══██╔══╝████╗ ████║██╔════╝ 
+███████╗   ██║   ██╔████╔██║██║  ███╗
+╚════██║   ██║   ██║╚██╔╝██║██║   ██║
+███████║   ██║   ██║ ╚═╝ ██║╚██████╔╝
+╚══════╝   ╚═╝   ╚═╝     ╚═╝ ╚═════╝ 
+SOLANA TRIPLE MONEY GLITCH
+🔥 3X YOUR MONEY INSTANTLY 🔥</pre>
+        <p class="command-line">🚀 Welcome to $STMG Terminal - Triple Money Glitch on Solana! 🌞</p>
+        <p class="command-line">Type 'help' to see available commands</p>
+        <div class="command-line">
+            <span class="prompt">degen@stmg:~$ </span>
+            <input type="text" id="input-line" autofocus>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('input-line');
+        
+        let marketData = {
+            price: 0,
+            change24h: 0,
+            volume24h: 0,
+            mcap: 0,
+            holders: 0
+        };
+
+        async function fetchPrice() {
+            try {
+                // Fetch price data from DexScreener
+                const response = await fetch('https://api.dexscreener.com/latest/dex/tokens/C1YaRJJqMsb6QCEkjHni5k4yeiSHuaPtNRVyVrpEpump');
+                const data = await response.json();
+                
+                if (data.pairs && data.pairs.length > 0) {
+                    const pair = data.pairs[0];
+                    marketData = {
+                        price: Number(pair.priceUsd),
+                        change24h: Number(pair.priceChange24h),
+                        volume24h: Number(pair.volume24h),
+                        mcap: Number(pair.fdv),
+                        holders: pair.holders || Math.floor(Math.random() * 1000) + 500
+                    };
+                }
+            } catch (error) {
+                console.error('Error fetching price:', error);
+            }
+        }
+
+        // Initial fetch and setup interval
+        fetchPrice();
+        setInterval(fetchPrice, 10000);
+
+        const commands = {
+            'help': () => `🔥 STMG TERMINAL COMMANDS 🔥
+
+price  - 💰 Check current $STMG price and market stats </br>
+wen moon  - 🚀 Find out when we're going to the moon </br>
+buy  - 💳 Learn how to buy $STMG tokens </br>
+hodl  - 💎 View current holder statistics </br>
+clear  - 🧹 Clear terminal screen </br>
+burn  - 🔥 View token burn statistics and mechanics </br>
+socials  - 🌐 All STMG community links </br>
+stake  - 📈 Check staking rates and rewards </br>
+
+Type any command to start! 🎮`,
+            
+            'price': () => {
+                const changeClass = marketData.change24h >= 0 ? 'price-up' : 'price-down';
+                return `Current $STMG Price: 💰 $${marketData.price.toFixed(10)} USD </br>📊 24h Change: <span class="${changeClass}">${marketData.change24h.toFixed(2)}%</span> </br>📈 24h Volume: $${Math.floor(marketData.volume24h).toLocaleString()}</br> 🌍 Market Cap: $${Math.floor(marketData.mcap).toLocaleString()} </br>⚡ Network: Solana </br>💎 Holders: ${marketData.holders}`;
+            },
+            
+            'wen moon': () => {
+                const responses = [
+                    "🔥 STMG IS YOUR TICKET TO FINANCIAL FREEDOM! 🚀",
+                    "Triple your money with one simple glitch ser 🌞",
+                    "Loading money glitch sequence... 🔥",
+                    "Money printer goes brrrrr 🖨️"
+                ];
+                return responses[Math.floor(Math.random() * responses.length)];
+            },
+            
+            'buy': () => `How to buy $STMG: </br>
+1. Get some $SOL </br>
+2. Connect Phantom wallet to Raydium </br>
+3. Swap SOL for $STMG </br>
+4. WATCH YOUR MONEY TRIPLE! 🔥 </br>
+
+Contract: C1YaRJJqMsb6QCEkjHni5k4yeiSHuaPtNRVyVrpEpump`,
+            
+            'hodl': () => `💎 STMG HOLDERS STATS 💎</br>
+Current Price: $${marketData.price.toFixed(10)} </br>
+Total HOLDERS: ${marketData.holders} </br>
+Diamond Hands: ${(Math.random() * 20 + 80).toFixed(2)}% </br>
+Tokens Staked: ${(Math.random() * 40 + 30).toFixed(2)}% </br>
+Average Hold Time: ${Math.floor(Math.random() * 24 + 24)}h` ,
+            
+            'clear': () => {
+                const lines = terminal.getElementsByClassName('command-line');
+                while(lines.length > 1) {
+                    lines[0].remove();
+                }
+            },
+
+            'burn': () => {
+                const burnAmount = (Math.random() * 1000000 + 500000).toFixed(0);
+                return `🔥 BURN MECHANICS 🔥
+1% Tax on Each Trade -> Burn Wallet
+Weekly Manual Burns
+Total Burned: ${burnAmount} $STMG
+Next Burn: ${Math.floor(Math.random() * 24)}h`;
+            },
+
+            'socials': () => `🌐 STMG COMMUNITY 🌐</br>
+Twitter: @STMG_Sol</br>
+Discord: discord.gg/stmg  </br>
+Telegram: t.me/SolanaTripleMoneyGlitch </br>
+Website: stmg.sol`,
+
+            'stake': () => {
+                const baseApy = 100;
+                const bonusApy = Math.floor(Math.random() * 200);
+                return `📈 STMG STAKING 📈
+Base APY: ${baseApy}% </br>
+Current Bonus APY: +${bonusApy}% </br>
+Total APY: ${baseApy + bonusApy}% </br>
+Lock Periods: 7/30/90 days </br>
+Total Staked: ${(Math.random() * 40 + 30).toFixed(2)}% </br>
+Rewards: Compound every 24h` ;
+            }
+        };
+
+        function createNewLine(content, isCommand = false) {
+            const line = document.createElement('div');
+            line.className = 'command-line';
+            
+            if (isCommand) {
+                line.innerHTML = `<span class="prompt">degen@stmg:~$ </span>${content}`;
+            } else {
+                line.innerHTML = content;
+            }
+            
+            terminal.insertBefore(line, input.parentElement);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const cmd = input.value.trim().toLowerCase();
+                createNewLine(input.value, true);
+                
+                if (cmd === 'wen moon') {
+                    createNewLine(commands['wen moon']());
+                } else if (cmd in commands) {
+                    const output = typeof commands[cmd] === 'function' 
+                        ? commands[cmd]()
+                        : commands[cmd];
+                    
+                    if (output) createNewLine(output);
+                } else if (cmd !== '') {
+                    createNewLine(`Command not found: ${cmd}. Type 'help' to see available commands 🔥`);
+                }
+                
+                input.value = '';
+                input.focus();
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            setTimeout(() => input.focus(), 10);
+        });
+    </script>
+</body>
+</html>
